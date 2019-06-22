@@ -37,12 +37,12 @@ class portfolio:
                 for x , weight, ticker in zip(range(len(allocation)), weights, self.tickers):
                     allocation[x] = (portfolio_value*weight)/row[ticker + " value"]
 
-                print(allocation)    
+             #   print(allocation)    
             portfolio_value = 0
             for ticker, value in zip(self.tickers,range(len(allocation))):
                 row[ticker + " value"]= allocation[value] * row[ticker + " value"]
                 
-                portfolio_value = row[ticker + " value"] * allocation[value] + portfolio_value
+                portfolio_value = row[ticker + " value"] + portfolio_value
      
             day_count = day_count +1
 
@@ -56,24 +56,35 @@ class portfolio:
 
 
         self.portfolio_data['portfolio value'] = self.portfolio_data.pct_change()
-        self.portfolio_data['portfolio value'] = self.portfolio_data["portfolio value"] +1 
-        self.portfolio_data['portfolio value'].iloc[0] = 1
         
  
 
         
         self.portfolio_data.index = pd.to_datetime(self.portfolio_data.index)
         
-        print(self.portfolio_data.groupby(self.portfolio_data["portfolio value"].index.year)["portfolio value"].prod())
-        print(self.portfolio_data.groupby(self.portfolio_data.index.year)["portfolio value"].std())
+        volatility = self.portfolio_data.groupby(self.portfolio_data.index.year)["portfolio value"].std()
         #print(self.portfolio_data)
         
+        self.portfolio_data['portfolio value'] = self.portfolio_data["portfolio value"] +1 
+        
+        self.portfolio_data['portfolio value'].iloc[0] = 1
+        returns = self.portfolio_data.groupby(self.portfolio_data["portfolio value"].index.year)["portfolio value"].prod()
+        
+        print(returns)
+        print(volatility)
+
 
 portfoliode = portfolio(['btc-usd','SPY',"VBMFX"])
 
 
-portfoliode.import_data(start_date = '01/01/2015', end_date = '01/01/2017')
+portfoliode.import_data(start_date = '01/01/2013', end_date = '01/01/2017')
 portfoliode.backtest([10,690,300])
+
+port = portfolio(['SPY',"VBMFX"])
+
+
+port.import_data(start_date = '01/01/2013', end_date = '01/01/2017')
+port.backtest([700,300])
 
 
 
